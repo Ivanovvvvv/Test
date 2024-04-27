@@ -116,7 +116,7 @@ public class Test {
     // Проверка корректности координат
     private static boolean isValidCoordinate(double coordinate) {
         if (coordinate < -(Math.pow(10, 38)) || coordinate > Math.pow(10, 38)) {
-            System.out.println("Одна или обе координаты не входят в диапазон чисел от (-10^38) до 10^38");
+            System.out.println("Одна или обе координаты точек не входят в диапазон чисел от (-10^38) до 10^38");
             return false;
         }
         return true;
