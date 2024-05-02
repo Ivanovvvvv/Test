@@ -1,0 +1,119 @@
+private static ArrayList<Dot> readFile2(String file2) throws IOException {
+        ArrayList<Dot> dots = new ArrayList<>();
+        try (BufferedReader points = new BufferedReader(new FileReader(file2))) {
+            String line;
+            boolean isEmptyFile = true;
+
+            // Проверяем, что file2 не пустой
+            while ((line = points.readLine()) != null) {
+                if (!line.trim().isEmpty()) {
+                    isEmptyFile = false;// Если строка не пустая, меняем флаг на false и прерываем цикл
+                    break;
+                }
+            }
+            if (isEmptyFile) {
+                System.err.println("Файл с координатами "+ file2+" пуст");
+                return dots;
+            }
+
+            while ((line = points.readLine()) != null && dots.size() < 100) {
+                line = line.trim();
+                if (line.isEmpty()) {
+                    continue; // Пропускаем пустые строки, если такие имеются
+                }
+                String[] coordinates = line.split("\\s+");
+                if (coordinates.length != 2) {
+                    System.err.println("Некорректное количество координат в одной из строк или нескольких. Необходимо задать координату Х и через пробел координату Y");
+                    return dots; // Прерываем выполнение программы, если формат некорректен
+                }
+                try {
+                    double dotX = Double.parseDouble(coordinates[0]);
+                    double dotY = Double.parseDouble(coordinates[1]);
+                    if (isValidCoordinate(dotX)&&isValidCoordinate(dotY)) {
+                        dots.add(new Dot(dotX, dotY));
+                    }
+                    else {
+                        break;
+                    }
+                } catch (NumberFormatException e) {
+                    System.err.println("Имеются некорректно указанные координаты в файле "+file2+". \n-Возможно в файле имеются нечисловые символы;\n-Внимание! В дробных числах целую чать от дробной необходимо разделять через точку.");
+                    return dots; // Прерываем выполнение программы, если формат некорректен
+                }
+            }
+        }
+        return dots;
+    }
+
+
+
+
+
+    private static double[] readFile1(String file1) throws IOException {
+            double[] centerAndRadiusFromFile1 = new double[3];
+            try (BufferedReader radiusAndCentre = new BufferedReader(new FileReader(file1))) {
+                String line;
+                boolean isEmptyFile = true;
+
+                // Проверяем, что file1 не пустой
+                radiusAndCentre.mark(100);
+                while ((line = radiusAndCentre.readLine()) != null) {
+                    if (!line.trim().isEmpty()) {
+                        isEmptyFile = false; // Если строка не пустая, меняем флаг на false и прерываем цикл
+                        break;
+                    }
+                }
+                if (isEmptyFile) {
+                    System.err.println("Файл с координатами центра окружности и радиусом " + file1 + " пуст");
+                    return null;
+                } else {
+                    radiusAndCentre.reset(); // Возвращаемся в начало файла, чтобы начать чтение сначала
+                }
+
+                // Читаем все строки из файла и обрабатываем только непустые строки с координатами
+                while ((line = radiusAndCentre.readLine()) != null) {
+                    line = line.trim();
+                    if (!line.isEmpty()) {
+                        String[] stringArray = line.split("\\s+");
+                        if (stringArray.length == 2) {
+                            try {
+                                centerAndRadiusFromFile1[0] = Double.parseDouble(stringArray[0]);
+                                centerAndRadiusFromFile1[1] = Double.parseDouble(stringArray[1]);
+                            } catch (NumberFormatException e) {
+                                System.err.println("Некорректные координаты центра окружности: " + line +"\n-Либо указаны нечисловые символы;\n-Либо дробное число, где отделение целой от дробной части выполнено запятой а не точкой.");
+                                return null;
+                            }
+                            if (!isValidCoordinate(centerAndRadiusFromFile1[0]) || !isValidCoordinate(centerAndRadiusFromFile1[1])) {
+                                return null; // Завершаем выполнение программы, если координаты некорректны
+                            }
+                            break; // После успешного чтения координат прерываем цикл
+                        } else {
+                            System.err.println("Координаты центра окружности в файле 1 "+file1+ " указаны некорректно:\n- Количество указанных чисел (координат) отлично от двух;;\n- Внимание! радиус необходимо указать в строке, находящейся после строки с координатами.\n");
+                            return null;
+                        }
+                    }
+                }
+
+                // Читаем радиус из следующей непустой строки
+                while ((line = radiusAndCentre.readLine()) != null) {
+                    line = line.trim();
+                    if (!line.isEmpty()) {
+                        String[] stringArray2 = line.split("\\s+");
+                        if (stringArray2.length == 1) {
+                            try {
+                                centerAndRadiusFromFile1[2] = Double.parseDouble(stringArray2[0]);
+                            } catch (NumberFormatException e) {
+                                System.err.println("Некорректные радиус окружности: " + line +" \n-Либо указаны нечисловые символы;\n-Либо дробное число, где отделение целой от дробной части выполнено запятой а не точкой.");
+                                return null;
+                            }
+                            break; // После успешного чтения радиуса прерываем цикл
+                        } else {
+                            System.err.println("Радиус окружности в файле1 " + file1+ " задан некорректно:\n- Количество указанных чисел (величина радиуса) отлично от одного.");
+                            return null;
+                        }
+                    }
+                }
+            }
+            return centerAndRadiusFromFile1;
+        }
+
+
